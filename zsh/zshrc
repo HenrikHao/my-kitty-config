@@ -113,10 +113,12 @@ source $ZSH/oh-my-zsh.sh
 # ROS 2 (Linux only — silently skipped on macOS)
 [ -f /opt/ros/humble/setup.zsh ] && source /opt/ros/humble/setup.zsh
 
-# Homebrew — try macOS Apple Silicon, macOS Intel, then Linuxbrew
+# Homebrew — try macOS Apple Silicon, macOS Intel, then Linuxbrew.
+# `cd "$HOME"` in the subshell so `brew shellenv` works even when the current
+# directory is unreadable or has been deleted out from under the shell.
 for _brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
   if [ -x "$_brew_path" ]; then
-    eval "$("$_brew_path" shellenv)"
+    eval "$(cd "$HOME" && "$_brew_path" shellenv)"
     break
   fi
 done
