@@ -110,36 +110,50 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-source /opt/ros/humble/setup.zsh
+# ROS 2 (Linux only — silently skipped on macOS)
+[ -f /opt/ros/humble/setup.zsh ] && source /opt/ros/humble/setup.zsh
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Homebrew — try macOS Apple Silicon, macOS Intel, then Linuxbrew
+for _brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+  if [ -x "$_brew_path" ]; then
+    eval "$("$_brew_path" shellenv)"
+    break
+  fi
+done
+unset _brew_path
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-. "$HOME/.local/bin/env"
+# uv-installed PATH helper — skip silently if uv isn't installed
+[ -s "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 # Ensure system bins come first
 export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
-# Put Conda at the end so it’s only used when you activate an env
-export PATH="$PATH:/home/henrik/anaconda3/bin"
 
+# Conda — only initialize if anaconda3 lives in $HOME. If you install it
+# somewhere else on a given machine, run `conda init zsh` there to overwrite
+# the managed block below with the correct paths.
+if [ -d "$HOME/anaconda3" ]; then
+  # Put Conda at the end so it’s only used when you activate an env
+  export PATH="$PATH:$HOME/anaconda3/bin"
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/henrik/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/henrik/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/henrik/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/henrik/anaconda3/bin:$PATH"
-    fi
+  # >>> conda initialize >>>
+  # !! Contents within this block are managed by 'conda init' !!
+  __conda_setup="$("$HOME/anaconda3/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+  if [ $? -eq 0 ]; then
+      eval "$__conda_setup"
+  else
+      if [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+          . "$HOME/anaconda3/etc/profile.d/conda.sh"
+      else
+          export PATH="$HOME/anaconda3/bin:$PATH"
+      fi
+  fi
+  unset __conda_setup
+  # <<< conda initialize <<<
 fi
-unset __conda_setup
-# <<< conda initialize <<<
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

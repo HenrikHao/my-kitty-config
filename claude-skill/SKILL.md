@@ -25,6 +25,8 @@ The user's terminal config — kitty plus zsh/oh-my-zsh/powerlevel10k — lives 
 
 oh-my-zsh, `zsh-autosuggestions`, `zsh-syntax-highlighting`, and `powerlevel10k` are NOT vendored. `zsh/install.sh` clones them from upstream so we keep getting upstream fixes.
 
+The repo works on both Linux and macOS. The tracked `zsh/zshrc` guards Linux-specific lines (ROS, Linuxbrew) so they silently skip on Mac, and detects Homebrew at any of `/opt/homebrew/bin/brew`, `/usr/local/bin/brew`, or `/home/linuxbrew/.linuxbrew/bin/brew`.
+
 ## Setup on a New Machine
 
 ```bash
