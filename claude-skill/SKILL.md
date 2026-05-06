@@ -38,6 +38,11 @@ ln -s ~/.config/kitty/claude-skill ~/.claude/skills/setting-up-terminal-dotfiles
 
 # 3. Install oh-my-zsh + plugins/theme and symlink ~/.zshrc and ~/.p10k.zsh
 ~/.config/kitty/zsh/install.sh
+
+# 4. Create ~/.zshrc.local for per-machine secrets (NOT tracked in git).
+#    The tracked zshrc sources this file at the end if it exists.
+#    Typical contents: `export GITHUB_TOKEN="ghp_..."` etc.
+touch ~/.zshrc.local && chmod 600 ~/.zshrc.local
 ```
 
 If SSH to GitHub isn't set up yet, swap in the HTTPS URL: `https://github.com/HenrikHao/my-kitty-config.git`.
